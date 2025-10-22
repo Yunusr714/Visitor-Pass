@@ -1,69 +1,59 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from '../lib/api';
 
 const AuthContext = createContext(null);
 
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // For staff multi-org you may also keep org/orgs in here; not needed for 'account' flow
+  const [orgs, setOrgs] = useState([]);
   const [org, setOrg] = useState(null);
-  const [loading, setLoading] = useState(!!token);
 
-  useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        if (token) {
-          const data = await api.me();
-          if (mounted) {
-            setUser(data.user);
-            setOrg(data.org);
-          }
-        }
-      } catch (e) {
-        // Ignore; api.me handles redirect on 401
-      } finally {
-        if (mounted) setLoading(false);
-      }
+  function setTokenAndUser(t, u) {
+    localStorage.setItem('token', t);
+    setToken(t);
+    setUser(u);
+  }
+
+  async function loadMe() {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const me = await api.me();
+      setUser(me.user);
+      // Optional: hydrate staff orgs here if needed
+    } catch (e) {
+      console.error('loadMe error', e);
+      logout();
+    } finally {
+      setLoading(false);
     }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [token]);
-
-  async function visitorLogin(email) {
-  const data = await api.visitorLogin(email);
-  if (!data || !data.token) throw new Error('Login failed');
-  localStorage.setItem('token', data.token);
-  setToken(data.token);
-  setUser(data.user);
-  setOrg(data.org);
-  return data;
-}
+  }
+  useEffect(() => { if (token) loadMe(); }, [token]);
 
   async function login(email, password) {
     const data = await api.login(email, password);
+    if (!data?.token) throw new Error(data?.error || 'Login failed');
     localStorage.setItem('token', data.token);
-    console.log('Login data:', data);
     setToken(data.token);
-    setUser(data.user);
-    setOrg(data.org);
+    setUser(data.user || null);
     return data;
   }
 
   function logout() {
     localStorage.removeItem('token');
-    setToken(null);
-    setUser(null);
-    setOrg(null);
-    window.location.href = '/login';
+    setToken(null); setUser(null);
   }
 
-  const value = { token, user, org, loading, login, logout ,visitorLogin};
+  const value = { token, user, loading, login, logout, setTokenAndUser, orgs, org };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export default AuthProvider;

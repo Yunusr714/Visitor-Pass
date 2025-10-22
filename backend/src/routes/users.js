@@ -1,11 +1,16 @@
 const router = require('express').Router();
 const { requireAuth, requireRoles } = require('../middleware/auth');
-const { createUser, listUsers } = require('../controllers/userController');
+const {
+  listUsers,
+  createUser,
+  updateUser,
+  deleteUser
+} = require('../controllers/usersController');
 
-router.use(requireAuth);
-
-// Simple routes without express-validator
-router.get('/', requireRoles('admin'), listUsers);
-router.post('/', requireRoles('admin'), createUser);
+// Only admins manage users. Order matters: requireAuth before requireRoles.
+router.get('/', requireAuth, requireRoles('admin'), listUsers);
+router.post('/', requireAuth, requireRoles('admin'), createUser);
+router.patch('/:id', requireAuth, requireRoles('admin'), updateUser);
+router.delete('/:id', requireAuth, requireRoles('admin'), deleteUser);
 
 module.exports = router;

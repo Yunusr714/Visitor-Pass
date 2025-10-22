@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const { ensureUploadsDirs, uploadsRoot } = require('./utils/uploads');
 
 const { connectDB } = require('./lib/db');
 const healthRouter = require('./routes/health');
@@ -18,6 +19,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
+ensureUploadsDirs();
+app.use('/uploads', express.static(uploadsRoot));
 
 app.use('/health', healthRouter);
 app.use('/auth', authRouter);

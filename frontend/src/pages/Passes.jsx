@@ -69,12 +69,9 @@ export default function Passes() {
                       <div className="muted">
                         <strong>Valid:</strong> {new Date(p.validFrom).toLocaleString()} → {new Date(p.validTo).toLocaleString()}
                       </div>
-                      <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-                        <a className="btn outline" href={api.passQrUrl(p._id)} target="_blank" rel="noreferrer">QR PNG</a>
-                        <a className="btn outline" href={api.passPdfUrl(p._id)} target="_blank" rel="noreferrer">PDF Badge</a>
-                      </div>
+                    
                     </div>
-                    <div>
+                    <div style={{margin:10}}>
                       <QRCode value={p.code} size={96} />
                     </div>
                   </div>

@@ -1,17 +1,17 @@
- { "orgId": { "$oid": "68f3a3304d5f817679adcebc" }, "name": "Virat", "email": "shajida18@gmail.com", "phone": "", "role": "admin", "status": "active", "passwordHash": "$2a$12$RfyvAFQcX7eNqMijtnwXEO921cWvb3unrmfuVg3Gq3LkxTKmgzQBm" }
+ { "orgId": { "$oid": "68f8a64839523f7c979ebcb9" }, "name": "Virat", "email": "shajida18@gmail.com", "phone": "", "role": "admin", "status": "active", "passwordHash": "$2a$12$RfyvAFQcX7eNqMijtnwXEO921cWvb3unrmfuVg3Gq3LkxTKmgzQBm" }
  {
-  "orgId": { "$oid": "68f3a3304d5f817679adcebc" },
+  "orgId": { "$oid": "68f8a64839523f7c979ebcb9" },
   "name": "Rohit",
-  "email": "rohit@email.com",
+  "email": "host_rgukt@gmail.com",
   "phone": "+91-8639838047",
   "role": "host",
   "status": "active",
   "passwordHash": "$2a$12$K9d4zSNU/KKkNwzJMY88Uub7bOw8YhjLKf9Ke8F99KWyPfKMBgj9y"
 }
 {
-  "orgId": { "$oid": "68f3a3304d5f817679adcebc" },
+  "orgId": { "$oid": "68f8a64839523f7c979ebcb9" },
   "name": "Security RGUKT",
-  "email": "host_rgukt@gmail.com",
+  "email": "security_rgukt@gmail.com",
   "phone": "+91-9000000001",
   "role": "security",
   "status": "active",

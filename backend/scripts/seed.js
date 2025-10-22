@@ -11,7 +11,7 @@ async function run() {
   await connectDB();
   console.log('Seeding demo data...');
 
-  const org = await Organization.create({ name: 'Rgukt Org' });
+  const org = await Organization.create({ name: 'RGUKT' });
   const admin = await User.create({
     orgId: org._id, name: 'Admin', email: 'admin@gmail.com',
     role: 'admin', status: 'active', passwordHash: await hashPassword('Admin123!')

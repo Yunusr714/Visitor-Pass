@@ -9,17 +9,17 @@ export default function Home() {
   return (
     <div className="section">
       {/* Hero */}
-      <div
-        className="hero"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-     
+      <div className="hero" style={{ backgroundImage: `url(${heroImage})` }}>
         <div className="hero-content" data-aos="fade-up">
           <h1 className="hero-title">Visitor Pass Management System</h1>
           <p className="hero-sub">Secure, fast, and paperless visitor management for your organization.</p>
-          <div className="hero-cta">
+          <div className="hero-cta" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {!user ? (
-              <Link to="/login" className="btn">Login</Link>
+              <>
+                <Link to="/login" className="btn">Login</Link>
+                <Link to="/register-org" className="btn secondary">Register Organization</Link>
+                <Link to="/register-visitor" className="btn outline">Register Visitor</Link>
+              </>
             ) : (
               <>
                 <Link to="/dashboard" className="btn">Open Dashboard</Link>
@@ -30,7 +30,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats / Highlights */}
+      {/* Rest of the page unchanged */}
       <div className="section grid" data-aos="fade-up">
         <div className="card center" data-aos="zoom-in" data-aos-delay="0">
           <div>
@@ -100,9 +100,12 @@ export default function Home() {
         <div className="card center" data-aos="fade-up">
           <div>
             <h3 style={{ marginTop: 0 }}>Get started in minutes</h3>
-            <p className="muted">Login, add your first visitor, create an appointment, and issue a QR pass.</p>
+            <p className="muted">Register your org or user, then login to manage visits.</p>
             {!user ? (
-              <Link to="/login" className="btn">Login</Link>
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link to="/register-org" className="btn">Register Organization</Link>
+                <Link to="/register-user" className="btn outline">Register User</Link>
+              </div>
             ) : (
               <Link to="/visitors" className="btn">Add Visitor</Link>
             )}

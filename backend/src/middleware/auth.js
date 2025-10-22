@@ -1,38 +1,44 @@
 const jwt = require('jsonwebtoken');
-const { ROLES } = require('../models/User');
 
-// Verifies JWT and attaches a normalized req.user
+const ALLOWED_ROLES = new Set(['admin', 'security', 'host', 'visitor', 'account']);
+
 function requireAuth(req, res, next) {
-  const hdr = req.headers.authorization || '';
-  const token = hdr.startsWith('Bearer ') ? hdr.slice(7) : null;
-  if (!token) return res.status(401).json({ error: 'Missing token' });
-
   try {
+    const header = req.headers.authorization || '';
+    // 1) Try Bearer header
+    let token = header.startsWith('Bearer ') ? header.slice(7) : '';
+    // 2) Fallback to token in query (for image/pdf asset URLs)
+    if (!token && req.query && req.query.token) {
+      token = req.query.token;
+    }
+    if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = payload.userId || payload.sub; // normalize id
-    if (!userId) return res.status(401).json({ error: 'Invalid token payload' });
 
     req.user = {
-      userId: String(userId),
-      orgId: String(payload.orgId || ''),
+      userId: payload.userId,
+      visitorId: payload.visitorId,
+      orgId: payload.orgId,
       role: String(payload.role || '').toLowerCase(),
-      name: payload.name,
-      email: payload.email
+      email: payload.email || '',
+      name: payload.name || ''
     };
-    return next();
+
+    if (req.user.role && !ALLOWED_ROLES.has(req.user.role)) {
+      return res.status(403).json({ error: 'Invalid role' });
+    }
+    next();
   } catch (e) {
-    return res.status(401).json({ error: 'Invalid token' });
+    console.error('requireAuth error:', e);
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 }
 
-// Role-based guard
 function requireRoles(...roles) {
-  roles.forEach((r) => {
-    if (!ROLES.includes(r)) throw new Error(`Unknown role: ${r}`);
-  });
+  const want = new Set(roles.map((r) => String(r).toLowerCase()));
   return (req, res, next) => {
-    if (!req.user?.role) return res.status(403).json({ error: 'Forbidden' });
-    if (!roles.includes(req.user.role)) return res.status(403).json({ error: 'Forbidden' });
+    const role = String(req.user?.role || '').toLowerCase();
+    if (!role || !want.has(role)) return res.status(403).json({ error: 'Forbidden' });
     next();
   };
 }
